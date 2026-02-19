@@ -11,8 +11,16 @@ export const Register = () => {
 
   const register = useMutation({
     mutationFn: userServices.register,
-    onSuccess: () => {
-      console.log("Register successfully");
+    onSuccess: (response) => {
+      const token = response?.data?.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response?.data?.data?.user),
+        );
+        navigate("/");
+      }
     },
   });
 
@@ -20,8 +28,7 @@ export const Register = () => {
     initialValues: AuthConstant.registerInitialValue,
     validationSchema: AuthConstant.RegisterSchema,
     async onSubmit(values) {
-      const response = await register.mutate(values);
-      navigate("/");
+      await register.mutate(values);
     },
   });
 
@@ -37,9 +44,11 @@ export const Register = () => {
             onChange={formik.handleChange}
           />
           <TextInput
+            type="password"
             label="Password"
             name="password"
             onChange={formik.handleChange}
+            isPassword
           />
           <Link to={"/login"} className="text-xs underline">
             Redirect to Login

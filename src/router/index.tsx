@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import { Home, Login, Register } from "../pages";
+import { Home, Login, Register, MyBookings } from "../pages";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const Router = () => {
   return (
@@ -9,7 +10,10 @@ export const Router = () => {
       {/* Catch-all for 404 pages */}
       <Route path="*" element={<h1>Not Found</h1>} />
 
-      <Route path="/" element={<Home />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+      </Route>
     </Routes>
   );
 };

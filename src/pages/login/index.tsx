@@ -12,8 +12,19 @@ export const Login = () => {
 
   const loginMutation = useMutation({
     mutationFn: userServices.login,
-    onSuccess: () => {
-      console.log("Login successfully");
+    onSuccess: (response) => {
+      const token = response?.data?.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response?.data?.data?.user),
+        );
+        navigate("/");
+      }
+    },
+    onError: (error) => {
+      console.error("Login failed", error);
     },
   });
 
@@ -22,7 +33,6 @@ export const Login = () => {
     validationSchema: AuthConstant.loginSchema,
     async onSubmit(values) {
       loginMutation.mutate(values);
-      navigate("/");
     },
   });
 
@@ -37,9 +47,11 @@ export const Login = () => {
             onChange={formik.handleChange}
           />
           <TextInput
+            type="password"
             label="Password"
             name="password"
             onChange={formik.handleChange}
+            isPassword
           />
           <Link to={"/register"} className="text-xs underline">
             Redirect to Register
